@@ -40,15 +40,40 @@ model = load_model("lstm_model.keras", compile=False)
 
 
 # ------------------------ STOCK SELECTION ---------------------
-st.sidebar.markdown("###  Select Stock")
+st.sidebar.markdown("### Select Stock")
 stock_ticker = st.sidebar.selectbox("Company", ["TSLA", "AAPL", "GOOGL", "MSFT", "AMZN"])
 
-# Fetch live data
-stock_data = yf.Ticker(stock_ticker)
-history = stock_data.history(period="5y")
+
+# SAFER DATA FETCHING FUNCTION
+def fetch_stock_history(ticker, periods=["5y", "1y", "6mo", "3mo", "1mo"]):
+    stock = yf.Ticker(ticker)
+    for p in periods:
+        try:
+            df = stock.history(period=p)
+            if df is not None and not df.empty:
+                return df
+        except:
+            pass
+    return None
+
+
+# Fetch stock history using fallback
+history = fetch_stock_history(stock_ticker)
+
+if history is None:
+    st.error(f"⚠ Unable to fetch data for {stock_ticker}. Yahoo Finance may be blocking requests or the ticker may be unstable right now.")
+    st.stop()
+
+# Process close prices
 close_prices = history["Close"].values.reshape(-1, 1)
 
-live_price = history["Close"].iloc[-1]
+# Safe live price extraction
+try:
+    live_price = history["Close"].iloc[-1]
+except IndexError:
+    st.error("⚠ No valid closing price found in returned data.")
+    st.stop()
+
 st.sidebar.success(f"Live Price: ${live_price:.2f}")
 
 # ------------------------ LSTM PREDICTION ----------------------

@@ -10,7 +10,7 @@ __pycache__/
 # Ignore large data files (optional)
 data/*.csv
 data/*.xlsx
-*.zip
+# *.zip
 
 # Ignore model checkpoints
 *.h5
