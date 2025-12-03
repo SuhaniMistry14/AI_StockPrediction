@@ -1,0 +1,40 @@
+
+Date - Trading day	(2023-01-14)
+Open - Price of the stock at the opening of the market	( ₹120.50 )
+High - Highest price reached during the day	(₹125.20)
+Low - Lowest price reached during the day	(₹118.60)
+Close - Final price when the market closed	(₹123.80)
+Adj Close - Adjusted close price after stock splits & dividends adjustments	(₹124.10)
+Volume - Number of shares traded that day	(3,500,000)
+
+
+📍 Open
+The starting reference price of the day.
+Helps understand price change from start to end.
+
+
+📍 High
+Shows highest confidence/trading interest during the day.
+
+
+📍 Low
+Shows the lowest point of fear/lowest trading value.
+
+
+📍 Close
+⚠ MOST important feature for forecasting models.
+People mainly try to predict the next day closing price.
+
+
+📍 Adj Close
+Used for:
+After stock split, numbers change
+After dividend paid, market adjusts real value
+So it gives the true corrected price.
+
+📍 Volume
+Shows market activity
+High volume = more investors buying/selling
+Low volume = less activity
+
+.\.venv\Scripts\activate

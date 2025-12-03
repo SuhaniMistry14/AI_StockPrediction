@@ -1,0 +1,21 @@
+# Ignore virtual environment
+.venv/
+
+# Ignore python cache
+__pycache__/
+
+# Ignore temp files
+*.pyc
+
+# Ignore large data files (optional)
+data/*.csv
+data/*.xlsx
+*.zip
+
+# Ignore model checkpoints
+*.h5
+*.keras
+*.pkl
+
+# VS Code files
+.vscode/
