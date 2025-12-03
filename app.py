@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from streamlit_chat import message
-import yfinance as yf
 import plotly.graph_objects as go
 
 # ------------------------ STREAMLIT CONFIG ------------------------
@@ -43,38 +42,26 @@ model = load_model("lstm_model.keras", compile=False)
 st.sidebar.markdown("### Select Stock")
 stock_ticker = st.sidebar.selectbox("Company", ["TSLA", "AAPL", "GOOGL", "MSFT", "AMZN"])
 
+# ---- STOOQ DATA FETCHING  ----
+def fetch_stock_history_stooq(ticker):
+    try:
+        url = f"https://stooq.com/q/d/l/?s={ticker.lower()}.us&i=d"
+        df = pd.read_csv(url)
+        df['Date'] = pd.to_datetime(df['Date'])
+        df = df.set_index('Date')
+        return df
+    except:
+        return None
 
-# SAFER DATA FETCHING FUNCTION
-def fetch_stock_history(ticker, periods=["5y", "1y", "6mo", "3mo", "1mo"]):
-    stock = yf.Ticker(ticker)
-    for p in periods:
-        try:
-            df = stock.history(period=p)
-            if df is not None and not df.empty:
-                return df
-        except:
-            pass
-    return None
+history = fetch_stock_history_stooq(stock_ticker)
 
-
-# Fetch stock history using fallback
-history = fetch_stock_history(stock_ticker)
-
-if history is None:
-    st.error(f"⚠ Unable to fetch data for {stock_ticker}. Yahoo Finance may be blocking requests or the ticker may be unstable right now.")
+if history is None or history.empty:
+    st.error(f"⚠ Unable to fetch data for {stock_ticker}. Please try again later.")
     st.stop()
 
-# Process close prices
+live_price = history["Close"].iloc[-1]
 close_prices = history["Close"].values.reshape(-1, 1)
 
-# Safe live price extraction
-try:
-    live_price = history["Close"].iloc[-1]
-except IndexError:
-    st.error("⚠ No valid closing price found in returned data.")
-    st.stop()
-
-st.sidebar.success(f"Live Price: ${live_price:.2f}")
 
 # ------------------------ LSTM PREDICTION ----------------------
 scaler = MinMaxScaler(feature_range=(0, 1))
